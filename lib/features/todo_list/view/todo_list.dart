@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_todo/features/todo_list/widgets/widgets.dart';
 import 'package:my_flutter_todo/models/task_model.dart';
 
 class TodoList extends StatefulWidget {
@@ -24,11 +25,27 @@ class _TodoListState extends State<TodoList> {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             dense: true,
-            leading: const Icon(Icons.circle_outlined),
+            leading: todoList[index].isFinish == true
+                ? const Icon(
+                    Icons.check_box,
+                    color: Colors.cyan,
+                  )
+                : const Icon(Icons.check_box_outline_blank),
             title: Text(
               todoList[index].title,
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    decoration: todoList[index].isFinish == true
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
             ),
+            onTap: () {
+              setState(() {
+                final bool isFinish = todoList[index].isFinish ?? false;
+
+                todoList[index].isFinish = !isFinish;
+              });
+            },
           );
         },
         separatorBuilder: (context, index) => const Divider(
@@ -38,7 +55,18 @@ class _TodoListState extends State<TodoList> {
         itemCount: todoList.length,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AddTaskAlert(
+              onChanged: (value) {
+                setState(() {
+                  todoList.add(TaskModel(id: todoList.length, title: value));
+                });
+              },
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );
