@@ -23,29 +23,47 @@ class _TodoListState extends State<TodoList> {
       ),
       body: ListView.separated(
         itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            dense: true,
-            leading: todoList[index].isFinish == true
-                ? const Icon(
-                    Icons.check_box,
-                    color: Colors.cyan,
-                  )
-                : const Icon(Icons.check_box_outline_blank),
-            title: Text(
-              todoList[index].title,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    decoration: todoList[index].isFinish == true
-                        ? TextDecoration.lineThrough
-                        : null,
-                  ),
+          return Dismissible(
+            key: ValueKey<int>(todoList[index].id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ),
-            onTap: () {
+            onDismissed: (direction) {
               setState(() {
-                final bool isFinish = todoList[index].isFinish ?? false;
-
-                todoList[index].isFinish = !isFinish;
+                todoList.removeAt(index);
               });
             },
+            child: ListTile(
+              dense: true,
+              leading: todoList[index].isFinish == true
+                  ? const Icon(
+                      Icons.check_box,
+                      color: Colors.cyan,
+                    )
+                  : const Icon(Icons.check_box_outline_blank),
+              title: Text(
+                todoList[index].title,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      decoration: todoList[index].isFinish == true
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+              ),
+              onTap: () {
+                setState(() {
+                  final bool isFinish = todoList[index].isFinish ?? false;
+
+                  todoList[index].isFinish = !isFinish;
+                });
+              },
+            ),
           );
         },
         separatorBuilder: (context, index) => const Divider(
